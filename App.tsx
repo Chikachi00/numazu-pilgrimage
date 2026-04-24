@@ -1,8 +1,13 @@
 import { StyleSheet, View } from "react-native";
 import MapView, { Marker } from "react-native-maps";
+import { useState } from "react";
 import { BUILTIN_SPOTS } from "./src/data/spots";
+import { PilgrimageSpot } from "./src/types/spot";
+import SpotCard from "./src/components/SpotCard";
 
 export default function App() {
+  const [selectedSpot, setSelectedSpot] = useState<PilgrimageSpot | null>(null);
+
   return (
     <View style={styles.container}>
       <MapView
@@ -13,6 +18,7 @@ export default function App() {
           latitudeDelta: 0.05,
           longitudeDelta: 0.05,
         }}
+        onPress={() => setSelectedSpot(null)}
       >
         {BUILTIN_SPOTS.map((spot) => (
           <Marker
@@ -21,11 +27,18 @@ export default function App() {
               latitude: spot.latitude,
               longitude: spot.longitude,
             }}
-            title={spot.name}
-            description={spot.description}
+            onPress={() => setSelectedSpot(spot)}
+            tracksViewChanges={false}
           />
         ))}
       </MapView>
+
+      {selectedSpot && (
+        <SpotCard
+          spot={selectedSpot}
+          onClose={() => setSelectedSpot(null)}
+        />
+      )}
     </View>
   );
 }
